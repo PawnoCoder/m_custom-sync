@@ -1,6 +1,6 @@
 /*
 
-	About: Supports SAMP 0.3.7-0.3.DL sync custom models v2.6.2
+	About: Supports SAMP 0.3.7-0.3.DL sync custom models v2.6.3
 	Author: PawnoCoder
 
 */
@@ -26,16 +26,8 @@
 	#define MAX_TEAMS 256
 #endif
 
-#if !defined MAX_CUSTOM_CHARS
-	#define MAX_CUSTOM_CHARS 5000
-#endif
-
-#if !defined MAX_CUSTOM_VEHICLES
-	#define MAX_CUSTOM_VEHICLES 5000
-#endif
-
-#if !defined MAX_CUSTOM_OBJECTS
-	#define MAX_CUSTOM_OBJECTS 5000
+#if !defined MAX_CUSTOM_MODEL_ID
+	#define MAX_CUSTOM_MODEL_ID 5000
 #endif
 
 #if !defined NO_CHAR_MODEL_FILE
@@ -113,31 +105,25 @@
 static
 	bool:c_player_sync_models[MAX_PLAYERS char];
 
-#if M_CUSTOM_CustomForPlayers || M_CUSTOM_CustomForActors
+#if M_CUSTOM_CustomForPlayers
 	static
-		c_char_models[MAX_CUSTOM_CHARS] = {-1, ...};
+		c_team_model_id[MAX_TEAMS],
+		c_player_model_id[MAX_PLAYERS];
+#endif
 
-	#if M_CUSTOM_CustomForPlayers
-		static
-			c_team_model_id[MAX_TEAMS],
-			c_player_model_id[MAX_PLAYERS];
-	#endif
-
-	#if M_CUSTOM_CustomForActors
-		static
-			c_actor_model_id[MAX_ACTORS];
-	#endif
+#if M_CUSTOM_CustomForActors
+	static
+		c_actor_model_id[MAX_ACTORS];
 #endif
 
 #if M_CUSTOM_CustomForVehicles
 	static
-		c_vehicle_models[MAX_CUSTOM_VEHICLES] = {-1, ...},
 		c_vehicle_model_id[MAX_VEHICLES];
 #endif
 
-#if M_CUSTOM_CustomForObjects
+#if M_CUSTOM_CustomForPlayers || M_CUSTOM_CustomForActors || M_CUSTOM_CustomForVehicles || M_CUSTOM_CustomForObjects
 	static
-		c_object_models[MAX_CUSTOM_OBJECTS] = {-1, ...};
+		c_custom_models[MAX_CUSTOM_MODEL_ID] = {-1, ...};
 #endif
 
 /*
@@ -167,9 +153,9 @@ stock IsPlayerSyncModels(playerid)
 
 	stock AddCharSyncModel(baseid, newid)
 	{
-		if (!(312 <= newid < MAX_CUSTOM_CHARS))
+		if (!(312 <= newid < MAX_CUSTOM_MODEL_ID))
 			return 0;
-		c_char_models[newid] = baseid;
+		c_custom_models[newid] = baseid;
 		return 1;
 	}
 
@@ -196,9 +182,9 @@ stock IsPlayerSyncModels(playerid)
 
 	stock AddVehicleSyncModel(baseid, newid)
 	{
-		if (!(612 <= newid < MAX_CUSTOM_VEHICLES))
+		if (!(612 <= newid < MAX_CUSTOM_MODEL_ID))
 			return 0;
-		c_vehicle_models[newid] = baseid;
+		c_custom_models[newid] = baseid;
 		return 1;
 	}
 
@@ -222,9 +208,9 @@ stock IsPlayerSyncModels(playerid)
 
 	stock AddSimpleSyncModel(baseid, newid)
 	{
-		if (!(612 <= newid < MAX_CUSTOM_OBJECTS))
+		if (!(612 <= newid < MAX_CUSTOM_MODEL_ID))
 			return 0;
-		c_object_models[newid] = baseid;
+		c_custom_models[newid] = baseid;
 		return 1;
 	}
 #endif
@@ -240,9 +226,9 @@ stock IsPlayerSyncModels(playerid)
 		new
 			newid = skinid;
 
-		if (312 <= skinid < MAX_CUSTOM_CHARS) {
-			if (c_char_models[skinid] != -1)
-				skinid = c_char_models[skinid];
+		if (312 <= skinid < MAX_CUSTOM_MODEL_ID) {
+			if (c_custom_models[skinid] != -1)
+				skinid = c_custom_models[skinid];
 			else
 				newid =
 				skinid = NO_CHAR_MODEL_FILE;
@@ -267,9 +253,9 @@ stock IsPlayerSyncModels(playerid)
 		new
 			newid = skin;
 
-		if (312 <= skin < MAX_CUSTOM_CHARS) {
-			if (c_char_models[skin] != -1)
-				skin = c_char_models[skin];
+		if (312 <= skin < MAX_CUSTOM_MODEL_ID) {
+			if (c_custom_models[skin] != -1)
+				skin = c_custom_models[skin];
 			else
 				newid =
 				skin = NO_CHAR_MODEL_FILE;
@@ -298,9 +284,9 @@ stock IsPlayerSyncModels(playerid)
 		new
 			newid = modelid;
 
-		if (312 <= modelid < MAX_CUSTOM_CHARS) {
-			if (c_char_models[modelid] != -1)
-				modelid = c_char_models[modelid];
+		if (312 <= modelid < MAX_CUSTOM_MODEL_ID) {
+			if (c_custom_models[modelid] != -1)
+				modelid = c_custom_models[modelid];
 			else
 				newid =
 				modelid = NO_CHAR_MODEL_FILE;
@@ -333,9 +319,9 @@ stock IsPlayerSyncModels(playerid)
 		new
 			newid = modelid;
 
-		if (612 <= modelid < MAX_CUSTOM_VEHICLES) {
-			if (c_vehicle_models[modelid] != -1)
-				modelid = c_vehicle_models[modelid];
+		if (612 <= modelid < MAX_CUSTOM_MODEL_ID) {
+			if (c_custom_models[modelid] != -1)
+				modelid = c_custom_models[modelid];
 			else
 				newid =
 				modelid = NO_VEHICLE_MODEL_FILE;
@@ -365,9 +351,9 @@ stock IsPlayerSyncModels(playerid)
 		new
 			newid = modelid;
 
-		if (612 <= modelid < MAX_CUSTOM_VEHICLES) {
-			if (c_vehicle_models[modelid] != -1)
-				modelid = c_vehicle_models[modelid];
+		if (612 <= modelid < MAX_CUSTOM_MODEL_ID) {
+			if (c_custom_models[modelid] != -1)
+				modelid = c_custom_models[modelid];
 			else
 				newid =
 				modelid = NO_VEHICLE_MODEL_FILE;
@@ -397,9 +383,9 @@ stock IsPlayerSyncModels(playerid)
 		new
 			newid = vehicletype;
 
-		if (612 <= vehicletype < MAX_CUSTOM_VEHICLES) {
-			if (c_vehicle_models[vehicletype] != -1)
-				vehicletype = c_vehicle_models[vehicletype];
+		if (612 <= vehicletype < MAX_CUSTOM_MODEL_ID) {
+			if (c_custom_models[vehicletype] != -1)
+				vehicletype = c_custom_models[vehicletype];
 			else
 				newid =
 				vehicletype = NO_VEHICLE_MODEL_FILE;
@@ -458,7 +444,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 		BS_ReadUint16(bs, wPlayerID);
 
-		if (312 <= c_player_model_id[wPlayerID] < MAX_CUSTOM_CHARS) {
+		if (312 <= c_player_model_id[wPlayerID] < MAX_CUSTOM_MODEL_ID) {
 
 			static
 				offset;
@@ -468,7 +454,7 @@ public OnPlayerDisconnect(playerid, reason)
 			BS_SetWriteOffset(bs, 24);
 
 			if (c_player_sync_models{playerid} == false)
-				BS_WriteUint32(bs, c_char_models[c_player_model_id[wPlayerID]]);
+				BS_WriteUint32(bs, c_custom_models[c_player_model_id[wPlayerID]]);
 			else
 				BS_WriteUint32(bs, c_player_model_id[wPlayerID]);
 
@@ -492,7 +478,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 		BS_ReadUint8(bs, byteTeam);
 
-		if (312 <= c_team_model_id[byteTeam] < MAX_CUSTOM_CHARS) {
+		if (312 <= c_team_model_id[byteTeam] < MAX_CUSTOM_MODEL_ID) {
 
 			static
 				offset;
@@ -502,7 +488,7 @@ public OnPlayerDisconnect(playerid, reason)
 			BS_SetWriteOffset(bs, 8);
 
 			if (c_player_sync_models{playerid} == false)
-				BS_WriteInt32(bs, c_char_models[c_team_model_id[byteTeam]]);
+				BS_WriteInt32(bs, c_custom_models[c_team_model_id[byteTeam]]);
 			else
 				BS_WriteInt32(bs, c_team_model_id[byteTeam]);
 
@@ -527,7 +513,7 @@ public OnPlayerDisconnect(playerid, reason)
 		BS_SetReadOffset(bs, 8);
 		BS_ReadUint8(bs, byteTeam);
 
-		if (312 <= c_team_model_id[byteTeam] < MAX_CUSTOM_CHARS) {
+		if (312 <= c_team_model_id[byteTeam] < MAX_CUSTOM_MODEL_ID) {
 
 			static
 				offset;
@@ -537,7 +523,7 @@ public OnPlayerDisconnect(playerid, reason)
 			BS_SetWriteOffset(bs, 16);
 
 			if (c_player_sync_models{playerid} == false)
-				BS_WriteInt32(bs, c_char_models[c_team_model_id[byteTeam]]);
+				BS_WriteInt32(bs, c_custom_models[c_team_model_id[byteTeam]]);
 			else
 				BS_WriteInt32(bs, c_team_model_id[byteTeam]);
 
@@ -565,7 +551,7 @@ public OnPlayerDisconnect(playerid, reason)
 			BS_ReadUint32(bs, wPlayerID);
 		#endif
 
-		if (312 <= c_player_model_id[wPlayerID] < MAX_CUSTOM_CHARS) {
+		if (312 <= c_player_model_id[wPlayerID] < MAX_CUSTOM_MODEL_ID) {
 
 			static
 				offset;
@@ -579,7 +565,7 @@ public OnPlayerDisconnect(playerid, reason)
 			#endif
 
 			if (c_player_sync_models{playerid} == false)
-				BS_WriteUint32(bs, c_char_models[c_player_model_id[wPlayerID]]);
+				BS_WriteUint32(bs, c_custom_models[c_player_model_id[wPlayerID]]);
 			else
 				BS_WriteUint32(bs, c_player_model_id[wPlayerID]);
 
@@ -605,7 +591,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 		BS_ReadUint16(bs, wActorID);
 
-		if (312 <= c_actor_model_id[wActorID] < MAX_CUSTOM_CHARS) {
+		if (312 <= c_actor_model_id[wActorID] < MAX_CUSTOM_MODEL_ID) {
 
 			static
 				offset;
@@ -615,7 +601,7 @@ public OnPlayerDisconnect(playerid, reason)
 			BS_SetWriteOffset(bs, 16);
 
 			if (c_player_sync_models{playerid} == false)
-				BS_WriteUint32(bs, c_char_models[c_actor_model_id[wActorID]]);
+				BS_WriteUint32(bs, c_custom_models[c_actor_model_id[wActorID]]);
 			else
 				BS_WriteUint32(bs, c_actor_model_id[wActorID]);
 
@@ -641,7 +627,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 		BS_ReadInt16(bs, wVehicleID);
 
-		if (612 <= c_vehicle_model_id[wVehicleID] < MAX_CUSTOM_VEHICLES) {
+		if (612 <= c_vehicle_model_id[wVehicleID] < MAX_CUSTOM_MODEL_ID) {
 
 			static
 				offset;
@@ -651,7 +637,7 @@ public OnPlayerDisconnect(playerid, reason)
 			BS_SetWriteOffset(bs, 16);
 
 			if (c_player_sync_models{playerid} == false)
-				BS_WriteInt32(bs, c_vehicle_models[c_vehicle_model_id[wVehicleID]]);
+				BS_WriteInt32(bs, c_custom_models[c_vehicle_model_id[wVehicleID]]);
 			else
 				BS_WriteInt32(bs, c_vehicle_model_id[wVehicleID]);
 
@@ -681,7 +667,7 @@ public OnPlayerDisconnect(playerid, reason)
 		BS_SetReadOffset(bs, 16);
 		BS_ReadInt32(bs, ModelID);
 
-		if (612 <= c_object_models[ModelID] < MAX_CUSTOM_OBJECTS) {
+		if (612 <= c_custom_models[ModelID] < MAX_CUSTOM_MODEL_ID) {
 
 			static
 				offset;
